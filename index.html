@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <body>
@@ -18,6 +19,8 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-hashtags="spiralToy" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <iframe src="https://www.facebook.com/plugins/share_button.php?href=https%3A%2F%2Faeium.github.io%2FspiralToy&layout=button&size=small&mobile_iframe=true&width=59&height=20&appId" width="59" height="20" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+
+<button style="background-image:url('https://raw.githubusercontent.com/Aeium/spiralToy/master/save_to_url.png'); width:108px;height:20px;  border: none; padding: 0;" onclick="saveState()" /button>
 
 <img id="map" src="https://raw.githubusercontent.com/Aeium/spiralToy/master/map1.png" hidden>
 
@@ -481,8 +484,8 @@ document.getElementById("container").addEventListener('click', function(event) {
     
     frames = 2000
     
-    var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-    window.history.pushState( null, null,  urlString);
+    //var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+    //window.history.pushState( null, null,  urlString);
     
     requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
@@ -505,6 +508,12 @@ document.getElementById("container").addEventListener('click', function(event) {
 	
 }); 
 
+function saveState(){
+
+    var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+    window.history.pushState( null, null,  urlString);
+
+}
 // this as far as I can tell does nothing and doesn't work.
 /*
 document.getElementById("container").addEventListener("load", function(event){
@@ -576,8 +585,8 @@ document.onkeydown = function(e) {
             //console.log(oldRetX)
             //console.log(oldRetY)
             
-            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-            window.history.pushState( null, null,  urlString);
+            //var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            //window.history.pushState( null, null,  urlString);
             
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
@@ -591,8 +600,8 @@ document.onkeydown = function(e) {
             oldRetY = retY
             retY = mod(retY - 1, 1080);
             
-            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-            window.history.pushState( null, null,  urlString);
+            //var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            //window.history.pushState( null, null,  urlString);
             
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
@@ -606,8 +615,8 @@ document.onkeydown = function(e) {
             oldRetY = retY
             retX = mod(retX + 1, 1080);
             
-            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-            window.history.pushState( null, null,  urlString);
+            //var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            //window.history.pushState( null, null,  urlString);
             
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
@@ -621,8 +630,8 @@ document.onkeydown = function(e) {
             oldRetY = retY
             retY = mod(retY + 1, 1080);
             
-            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-            window.history.pushState( null, null,  urlString);
+            //var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            //window.history.pushState( null, null,  urlString);
             
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
