@@ -576,6 +576,9 @@ document.onkeydown = function(e) {
             //console.log(oldRetX)
             //console.log(oldRetY)
             
+            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            window.history.pushState( null, null,  urlString);
+            
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
             animRetX = oldRetX
@@ -587,6 +590,10 @@ document.onkeydown = function(e) {
             oldRetX = retX
             oldRetY = retY
             retY = mod(retY - 1, 1080);
+            
+            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            window.history.pushState( null, null,  urlString);
+            
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
             animRetX = oldRetX
@@ -598,6 +605,10 @@ document.onkeydown = function(e) {
             oldRetX = retX
             oldRetY = retY
             retX = mod(retX + 1, 1080);
+            
+            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            window.history.pushState( null, null,  urlString);
+            
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
             animRetX = oldRetX
@@ -609,6 +620,10 @@ document.onkeydown = function(e) {
             oldRetX = retX
             oldRetY = retY
             retY = mod(retY + 1, 1080);
+            
+            var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+            window.history.pushState( null, null,  urlString);
+            
             requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
             animRetX = oldRetX
