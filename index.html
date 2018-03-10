@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="container">
+<canvas id="myCanvas" width=1620%; height=810%; style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+</div>
+
+<p>This page is a mouse toy, and also a visualization of larger scale behavior of the mouse toy across many possible inputs.</p>
+
+<p>If you move the mouse around the left section of the window, it will generate a pattern using the mouse co-ordinates. The right section of the window is a visualization of roughly 1 million starting co-ordinates, graphed by image complexity (estimated by PNG file size). It's possible to explore the graph by clicking on it or using the arrow keys.</p>
+
+<a href="https://twitter.com/Aeium?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @Aeium</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<img id="map" src="https://i.imgur.com/BcDfTJk.png" hidden>
+
+<script>
+/*
+Copyright 2017 Nathan Epstein
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
+
+
+// https://gist.github.com/joates/6584908
+function linspace(a,b,n) {
+    if(typeof n === "undefined") n = Math.max(Math.round(b-a)+1,1);
+    if(n<2) { return n===1?[a]:[]; }
+    var i,ret = Array(n);
+    n--;
+    for(i=n;i>=0;i--) { ret[i] = (i*b+(n-i)*a)/n; }
+    return ret;
+}
+
+//https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+var angles = linspace(0,Math.PI * 2, 4)
+var slice  = Math.PI / 6
+
+var cellSize2 = 1
+
+// these mark the position of the reticule on the map
+var retX = 0   // ret for reticule, not return
+var retY = 0
+
+var oldRetX = 0 // old reticule co-ordinates for animation
+var oldRetY = 0
+
+var animRetX = 0 // seems simpler for this to be global? Or should I just pass it recursively?
+var animRetY = 0 
+
+var rho    // more globals
+var phi    // these are so I can write the rho and theta on the right side of the screen 
+
+var starttime
+
+function mod(n, m) {
+        return ((n % m) + m) % m;
+}
+
+function distance1(x1, y1, x2, y2){   
+
+    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)   
+
+}
+
+function distance2(x1, y1, x2, y2){   
+
+    return  Math.abs(x1 - x2)  + Math.abs(y1 - y2)   // this isn't actually euclidian distance but it should work the same for relative distance ordering
+
+}
+ 
+
+function offset(x, y, angle, factor){
+
+
+    returnX = x + (Math.sin(angle))* factor
+    
+
+    
+    returnY = y + (Math.cos(angle)) * factor
+    
+    return [returnX,returnY]
+
+}
+
+var canvas1 = document.getElementById("myCanvas");
+var ctx1    = canvas1.getContext("2d");
+
+var img  = document.getElementById('map');
+
+//console.log(angles)
+//console.log(slice)
+
+var canvasLeft = canvas1.offsetLeft;
+var canvasTop  = canvas1.offsetTop;
+
+var count = 0
+var drawX = 520
+var drawY = 520
+
+var circleSize = 75
+
+var directions = [2,3,4,5,0,1]
+
+var circX = []
+var circY = []
+
+circX.push(drawX)
+circY.push(drawY)
+
+    //ret = offset(drawX, drawY, 0, circleSize)
+    //drawX = ret[0]
+    //drawY = ret[1]
+
+for(var i = 0; i < 14; i++){
+        
+    for(var j = 0; j < i*6; j++){
+    
+        circX.push(drawX)
+        circY.push(drawY)
+    
+        ret = offset(drawX, drawY, directions[Math.floor(j / i)], circleSize)
+        drawX = ret[0]
+        drawY = ret[1]
+
+
+       
+    }
+    
+    ret = offset(drawX, drawY, 0, circleSize)
+    drawX = ret[0]
+    drawY = ret[1]
+
+}
+
+var shift = 0
+var shift2 = 0
+
+function drawTriHex(size1, size2, rotation){
+
+    //point1 = 
+
+
+
+}
+
+function draw(eventX, eventY, animation){
+
+    drawSpiral(eventX, eventY)
+    drawReticule(animation)
+
+}
+
+
+function drawSpiral(eventX, eventY){
+
+    ctx1.fillStyle="#FFFFFF";
+    ctx1.fillRect(0,0,810,canvas1.height);
+
+    ctx1.fillStyle="#000000";
+   
+    ctx1.font = "45px Arial";
+    //ctx1.fillText("Follow Me on Twitter!!",110,530);
+    ctx1.fillText("@Aeium",620,790);
+    
+	var pixX = (eventX / .75);
+	var pixY = (eventY / .75);
+   
+   
+    sizeValue = distance1(pixX, pixY, 540, 540)
+    
+    angle = Math.atan2( 540 - pixY, 540 - pixX) // (Math.PI)
+   
+    rho = sizeValue//console.log(angle)
+    phi = angle
+    
+    ctx1.font = "25px Arial";
+    //ctx1.fillText("Follow Me on Twitter!!",110,530);
+    
+    
+    dotList = []
+    
+    
+    for (var i = 0; i < 300; i++){
+    
+        //console.log(canvasLeft/2)
+    
+        dotList.push(offset(540, 540, i * angle, ((sizeValue + 50) * i / 200) ))
+    
+        //.log(dotList[i])
+    
+    
+    }
+    
+    for(var i = 0; i < 299; i++){
+    
+        ctx1.beginPath();
+        ctx1.moveTo(dotList[i][0] * .75,dotList[i][1] * .75);
+        ctx1.lineTo(dotList[i+1][0] * .75,dotList[i+1][1] * .75);
+        ctx1.stroke();
+    
+    }
+    
+
+    
+}
+
+function setPix(x, y, r, g, b, neigh){
+
+    if(highlightArray[neigh] == 1){
+
+        var xPix = x * cellSize;
+        var yPix = y * cellSize;
+
+        ctx.fillStyle = '#f00';
+        ctx.fillRect(xPix, yPix, cellSize, cellSize);
+
+        var xPix = (x * cellSize) + 2;
+        var yPix = (y * cellSize) + 2;
+
+        ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+        ctx.fillRect(xPix, yPix, cellSize-4, cellSize-4);
+
+
+    }
+    else{
+
+        var xPix = x * cellSize;
+        var yPix = y * cellSize;
+
+        ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+        ctx.fillRect(xPix, yPix, cellSize, cellSize);
+    }
+
+}
+
+
+function setPix2(x, y, r, g, b){
+
+    var xPix = x * cellSize2;
+    var yPix = y * cellSize2;
+
+    //console.log(cellSize2);
+	
+    //console.log(xPix);
+    //console.log(yPix);
+	
+
+    ctx1.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+    ctx1.fillRect(xPix, yPix, 1, 1);
+
+}
+
+function drawReticule(animation){
+
+    if(animation){
+	var x = animRetX + 810 //= (event.pageX   - canvasLeft) + 810;
+	var y = animRetY //(event.pageY   - canvasTop);
+    }
+    else{
+    var x = retX + 810
+    var y = retY
+    
+    }
+    
+    
+    ctx1.drawImage(img, 0, 0, img.width,    img.height,     // source rectangle
+                        810, 0, 810, 810); // destination rectangle
+
+    //ctx2.fillStyle = 'rgb('+255+',' +0+ ','+0+')';
+	
+    ctx1.strokeStyle="#FF0000";
+    
+    ctx1.beginPath();
+    ctx1.moveTo(x+20,y);
+    ctx1.lineTo(x-20,y);
+    ctx1.stroke();
+    
+    ctx1.beginPath();
+    ctx1.moveTo(x,y-20);
+    ctx1.lineTo(x,y+20);
+    ctx1.stroke();
+    
+    ctx1.strokeStyle="#000000";
+    
+    /*
+    setPix2(x, y, 255, 0, 0, 0);
+	
+	setPix2(mod(x + 2, 810) + 810, y, 256, 0, 0);
+	setPix2(mod(x + 3, 810) + 810, y, 256, 0, 0);
+	setPix2(mod(x + 4, 810) + 810, y, 256, 0, 0);
+
+	setPix2(mod(x - 2, 810) + 810, y, 256, 0, 0);
+	setPix2(mod(x - 3, 810) + 810, y, 256, 0, 0);
+	setPix2(mod(x - 4, 810) + 810, y, 256, 0, 0);	
+
+	setPix2(x, mod(y + 2, 810), 256, 0, 0);
+	setPix2(x, mod(y + 3, 810), 256, 0, 0);
+	setPix2(x, mod(y + 4, 810), 256, 0, 0);
+	
+	setPix2(x, mod(y - 2, 810), 256, 0, 0);
+	setPix2(x, mod(y - 3, 810), 256, 0, 0);
+	setPix2(x, mod(y - 4, 810), 256, 0, 0);
+    */
+    
+    
+    ctx1.fillStyle="#000000";
+    ctx1.fillRect(810,0,285,50);
+    
+    ctx1.fillStyle="#FFFFFF";
+    ctx1.fillRect(813,3,279,44);
+    
+    ctx1.fillStyle="#000000";
+    
+    ctx1.fillText('r: '+ rho.toFixed(4),825,35);
+    ctx1.fillText('ϕ: '+ phi.toFixed(4),965,35);
+    
+	
+}
+
+
+
+function drawBackground(){
+
+    ctx2.drawImage(img, 0, 0, img.width,    img.height,     // source rectangle
+                        0, 0, canvas2.width, canvas2.height); // destination rectangle
+
+	ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+	
+}
+
+
+function getBitArray(num){
+
+    var bitArray = new Object();
+	
+    //console.log(num);
+	
+    for (var i = 0; i < 16; ++i) {
+        bitArray[i] = num % 2;
+		//console.log(i + ":" + bitArray[i]);
+		num = Math.floor(num/2);
+	}
+
+    return bitArray; 
+}
+
+function get4BitArray(num){
+
+    var bitArray = new Object();
+	
+    //console.log(num);
+	
+    for (var i = 0; i < 4; ++i) {
+        bitArray[i] = num % 2;
+		//console.log(i + ":" + bitArray[i]);
+		num = Math.floor(num/2);
+	}
+
+    return bitArray; 
+}
+
+function get8BitArray(num){
+
+    var bitArray = new Object();
+	
+    //console.log(num);
+	
+    for (var i = 0; i < 8; ++i) {
+        bitArray[i] = num % 2;
+		//console.log(i + ":" + bitArray[i]);
+		num = Math.floor(num/2);
+	}
+
+    return bitArray; 
+}
+
+function get6BitArray(num){
+
+    var bitArray = new Object();
+	
+    //console.log(num);
+	
+    for (var i = 0; i < 6; ++i) {
+        bitArray[i] = num % 2;
+		//console.log(i + ":" + bitArray[i]);
+		num = Math.floor(num/2);
+	}
+
+    return bitArray; 
+}
+
+/// expand with color, background etc.
+function drawTextBG(ctx, txt, font, x, y) {
+
+    /// lets save current state as we make a lot of changes        
+    ctx.save();
+
+    /// set font
+    ctx.font = font;
+
+    /// draw text from top - makes life easier at the moment
+    ctx.textBaseline = 'top';
+
+    /// color for background
+    ctx.fillStyle = '#fff';
+
+    /// get width of text
+    var width = ctx.measureText(txt).width;
+
+    /// draw background rect assuming height of font
+    ctx.fillRect(x-3, y-3, width+6, parseInt(font, 10)+6);
+	
+    /// text color
+    ctx.fillStyle = '#000';
+
+    /// draw text on top
+    ctx.fillText(txt, x, y);
+
+    /// restore original state
+    ctx.restore();
+}
+
+function showRules(ctx, bitArray, x, y)  {
+
+
+    for (var i = 0; i < 15; i++){
+	
+        if(bitArray[i] == 1){
+            ctx.drawImage(imageList1[i], x+(50*i), y);
+		}
+		else{
+            ctx.drawImage(imageList0[i], x+(50*i), y);
+		}
+	
+	
+	}
+
+}
+
+function utoa(str) {
+    return window.btoa(unescape(encodeURIComponent(str)));
+}
+
+
+var canvasLeft = canvas1.offsetLeft;
+var canvasTop  = canvas1.offsetTop;
+
+document.getElementById("container").addEventListener('click', function(event) {
+    
+    var pixX = (event.pageX - canvasLeft) % 810;
+    var pixY = event.pageY - canvasTop;
+	
+    //console.log(pixX)
+    //console.log(pixY)
+    
+    oldRetX = retX
+    oldRetY = retY
+    
+    retX = pixX;
+    retY = pixY;
+    
+    frames = 2000
+    
+    var urlString = "x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+    window.history.pushState( null, null,  window.location.pathname +  urlString);
+    
+    requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, frames, (retX - oldRetX), (retY - oldRetY))
+             })
+    //console.log(retX)
+    //console.log(retY)
+    
+    //draw(retX, retY);
+	    //drawTextBG(ctx3, rule.toString() + '         ', '32px arial', 40, 30 );
+        //showRules(ctx, rule, 0,0);
+
+        //var urlString = "/heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+        //window.history.pushState( null, null, urlString);
+	    //drawStarts(160, 0, bitArray);
+        //xhttp.open("GET", "autolog1.asp?rule=" + rule.toString(), true);
+		//xhttp.send()
+	
+}); 
+
+// this as far as I can tell does nothing and doesn't work.
+/*
+document.getElementById("container").addEventListener("load", function(event){
+
+    //draw(168,642,false);
+
+    oldRetX = 168
+    oldRetY = 642
+
+    retX = 198
+    retY = 672
+    
+    frames = 2000
+    
+    requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, frames, (retX - oldRetX), (retY - oldRetY))
+             })
+
+});
+*/
+
+ 
+function moveit(timestamp, duration, deltaX, deltaY){
+    //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date:
+    var timestamp = timestamp || new Date().getTime()
+    var runtime = timestamp - starttime
+    var progress = runtime / duration
+    progress = Math.min(progress, 1)
+    
+    
+    animRetX = oldRetX + deltaX * progress
+    animRetY = oldRetY + deltaY * progress
+        
+    draw(animRetX, animRetY, true)
+    //el.style.left = (dist * progress).toFixed(2) + 'px'
+    if (runtime < duration){ // if duration not met yet
+        requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            moveit(timestamp, duration, deltaX, deltaY)
+        })
+    }
+}
+ 
+//requestAnimationFrame(function(timestamp){
+//    starttime = timestamp || new Date().getTime() //if browser doesn't support requestAnimationFrame, generate our own timestamp using Date
+//    moveit(timestamp, adiv, 400, 2000) // 400px over 1 second
+//})
+
+document.getElementById("container").addEventListener('mousemove', function(event) {
+   
+   
+   if( (event.pageX - canvasLeft) < 810){
+       draw(event.pageX - canvasLeft, event.pageY - canvasTop)}
+   
+
+});
+
+document.onkeydown = function(e) {
+    switch (e.keyCode) {
+        case 37:
+            oldRetX = retX
+            oldRetY = retY
+            retX = mod(retX - 1, 1080);
+            
+            //console.log(retX)
+            //console.log(retX)
+            //console.log(oldRetX)
+            //console.log(oldRetY)
+            
+            requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, 2000, (retX - oldRetX), (retY - oldRetY))
+             })
+            break;
+        case 38:
+            oldRetX = retX
+            oldRetY = retY
+            retY = mod(retY - 1, 1080);
+            requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, 2000, (retX - oldRetX), (retY - oldRetY))
+             })
+            break;
+        case 39:
+            oldRetX = retX
+            oldRetY = retY
+            retX = mod(retX + 1, 1080);
+            requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, 2000, (retX - oldRetX), (retY - oldRetY))
+             })
+            break;
+        case 40:
+            oldRetX = retX
+            oldRetY = retY
+            retY = mod(retY + 1, 1080);
+            requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+            starttime = timestamp || new Date().getTime()
+            animRetX = oldRetX
+            animRetY = oldRetY
+            moveit(timestamp, 2000, (retX - oldRetX), (retY - oldRetY))
+             })
+            break;
+            /*
+        case 32:
+            var rule = retX + (retY * 1080);
+            var bitArray = getBitArray(rule);
+            drawAuto(rule, true);
+			drawTextBG(ctx3, rule.toString() + '         ', '32px arial', 40, 30 );
+            //showRules(ctx, rule, 0,0);
+	        drawStarts(160, 0, bitArray);
+
+            var urlString = "/heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+
+            window.history.pushState( null, null, urlString);
+            xhttp.open("GET", "autolog2.asp?rule=" + rule.toString(), true);
+			xhttp.send();
+			*/
+    }
+}
+
+var url_x1 = getParameterByName('x1')
+var url_y1 = getParameterByName('y1')
+
+var url_x2 = getParameterByName('x2')
+var url_y2 = getParameterByName('y2')
+
+if(url_x1 === null && url_x2 === null){
+    // default example
+    oldRetX = 166
+    oldRetY = 640
+
+    retX = 171
+    retY = 645
+    }
+else if(url_x2 === null){
+   // single image
+   oldRetX = parseInt(url_x1)
+   oldRetY = parseInt(url_y1)
+   retX = parseInt(url_x1)
+   retY = parseInt(url_y1)
+}
+else {
+    // linked animation
+   oldRetX = parseInt(url_x1)
+   oldRetY = parseInt(url_y1)
+   retX = parseInt(url_x2)
+   retY = parseInt(url_y2)
+}
+    
+frames = 2000
+    
+requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
+    starttime = timestamp || new Date().getTime()
+    animRetX = oldRetX
+    animRetY = oldRetY
+    moveit(timestamp, frames, (retX - oldRetX), (retY - oldRetY))
+    })
+
+//console.log("test")
+
+//draw(168,642,false);
+//else {
+//    ctx2.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas2.width, canvas2.height);
+//}
+//drawAuto(11155);
+
+
+</script>
+
+</body>
+</html>
