@@ -477,8 +477,8 @@ document.getElementById("container").addEventListener('click', function(event) {
     
     frames = 2000
     
-    var urlString = "x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
-    window.history.pushState( null, null,  window.location.pathname +  urlString);
+    var urlString = "?x1="+ oldRetX.toString() + "&y1=" + oldRetY.toString() + "&x2=" + retX.toString() + "&y2=" + retY.toString() //heatmap/color/" + rule.toString() + "/" + BitArraytob64(startArray);
+    window.history.pushState( null, null,  urlString);
     
     requestAnimationFrame(function(timestamp){ // call requestAnimationFrame again with parameters
             starttime = timestamp || new Date().getTime()
