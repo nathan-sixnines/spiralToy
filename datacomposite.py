@@ -72,6 +72,8 @@ image.show() #ave('test.png')
 
 image.save("map1.png")
 
+# switching polar and xy co-ordinate for next image
+
 radial = np.zeros((540,540))
 
 for i in range(1080):
