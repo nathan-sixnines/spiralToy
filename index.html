@@ -75,6 +75,48 @@ var phi    // these are so I can write the rho and theta on the right side of th
 
 var starttime
 
+//var real = new Float32Array(300);
+//var imag = new Float32Array(300);
+var audioCtx = new AudioContext();
+var baseOsc  = audioCtx.createOscillator();
+var angleOsc = audioCtx.createOscillator();
+
+// audio stuff
+
+var notes = []
+
+// calculate frequencies for synth
+
+circleArcLength = 2 * Math.PI
+circleFreq      = 1 / circleArcLength
+
+for (var n = -24-9; n < 0; n++){  // 24 from middle c, then 9 from middle a (440)
+
+    notes.push((440 * (2**(1/12))**n) / circleFreq )// formula for note n divided by base frequency of synth
+    //console.log(notes[n+24+9])
+}
+
+var fundemental = notes[0]
+
+filter = audioCtx.createBiquadFilter();
+filter.type = "lowpass"
+
+filter.frequency.setValueAtTime(0, audioCtx.currentTime);  // this is how i am going to turn the notes off because other ways are annoying
+
+baseOsc.type = 'sawtooth'
+//baseOsc.frequency.setValueAtTime(Math.PI * oscFactor, audioCtx.currentTime)
+baseOsc.connect(filter);
+baseOsc.start();
+
+angleOsc.type = 'triangle'
+//angleOsc.frequency.setValueAtTime(Math.PI * oscFactor, audioCtx.currentTime)
+angleOsc.connect(filter);
+angleOsc.start();
+
+filter.connect(audioCtx.destination);
+
+var noteOn = false
+
 function mod(n, m) {
         return ((n % m) + m) % m;
 }
@@ -170,9 +212,30 @@ function draw(eventX, eventY, animation){
 
     drawSpiral(eventX, eventY)
     drawReticule(animation)
+    setNote()
 
 }
 
+function setNote(){
+    //   console.log(fundemental)
+
+    //baseOsc.stop()
+    //angleOsc.stop()  
+  
+    
+    angleOsc.frequency.setValueAtTime((1/Math.abs(phi)) * fundemental, audioCtx.currentTime)
+    //angleOsc.connect(audioCtx.destination);
+    angleOsc.connect(filter);
+    
+    baseOsc.frequency.setValueAtTime((1/(Math.PI * 2)) * fundemental, audioCtx.currentTime)
+    //baseOsc.connect(audioCtx.destination);
+    baseOsc.connect(filter);
+
+    //baseOsc.start()
+    //angleOsc.start()
+    
+
+}
 
 function drawSpiral(eventX, eventY){
 
@@ -195,6 +258,23 @@ function drawSpiral(eventX, eventY){
    
     rho = sizeValue//console.log(angle)
     phi = angle
+    
+    
+    if(noteOn){
+        filter.frequency.setValueAtTime(sizeValue, audioCtx.currentTime);
+    }
+    else{
+        filter.frequency.setValueAtTime(0, audioCtx.currentTime);
+    }
+    // take inverses of angle because angle better describes wavelength than frequency
+    
+    angleOsc.frequency.setValueAtTime((1/Math.abs(angle)) * fundemental, audioCtx.currentTime)
+    //angleOsc.connect(audioCtx.destination);
+    angleOsc.connect(filter);
+    
+    baseOsc.frequency.setValueAtTime((1/(Math.PI * 2)) * fundemental, audioCtx.currentTime)
+    //baseOsc.connect(audioCtx.destination);
+    baseOsc.connect(filter);
     
     ctx1.font = "25px Arial";
     //ctx1.fillText("Follow Me on Twitter!!",110,530);
@@ -640,6 +720,7 @@ document.onkeydown = function(e) {
             moveit(timestamp, 2000, (retX - oldRetX), (retY - oldRetY))
              })
             break;
+            
             /*
         case 32:
             var rule = retX + (retY * 1080);
@@ -655,6 +736,232 @@ document.onkeydown = function(e) {
             xhttp.open("GET", "autolog2.asp?rule=" + rule.toString(), true);
 			xhttp.send();
 			*/
+            
+        case 32:
+        
+            // starting and stopping notes with filter because stopping osc is error prone
+            
+            if(noteOn){
+                noteOn = false
+                filter.frequency.setValueAtTime(0, audioCtx.currentTime);
+            }
+            else{
+                noteOn = true
+                filter.frequency.setValueAtTime(sizeValue, audioCtx.currentTime);
+            }
+          
+           
+        // note keys in order:       z,  s,  x,  d,  c,  v,  g,  b,  h,  n,  j,  m,   ,,  l,   .,   ;,   /
+        // note key codes in order: 90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188, 76, 190, 186, 191
+
+        
+        case 90:
+            fundemental = notes[0]
+            setNote()
+            break
+            
+        case 83:
+            fundemental = notes[1]
+            setNote()
+            break
+            
+        case 88:
+            fundemental = notes[2]
+            setNote()
+            break
+        
+        case 68:
+            fundemental = notes[3]
+            setNote()
+            break
+            
+        case 67:
+            fundemental = notes[4]
+            setNote()
+            break
+            
+        case 86:
+            fundemental = notes[5]
+            setNote()
+            break
+            
+        case 71:
+            fundemental = notes[6]
+            setNote()
+            break
+            
+        case 66:
+            fundemental = notes[7]
+            setNote()
+            break
+            
+        case 72:
+            fundemental = notes[8]
+            setNote()
+            break
+            
+        case 78:
+            fundemental = notes[9]
+            setNote()
+            break
+            
+        case 74:
+            fundemental = notes[10]
+            setNote()
+            break
+            
+        // note keys in order:       z,  s,  x,  d,  c,  v,  g,  b,  h,  n,  j,  m,   ,,  l,   .,   ;,   /
+        // note key codes in order: 90, 83, 88, 68, 67, 86, 71, 66, 72, 78, 74, 77, 188, 76, 190, 186, 191
+            
+        case 77:
+            fundemental = notes[11]
+            setNote()
+            break
+            
+        case 188:
+            fundemental = notes[12]
+            setNote()
+            break
+            
+        case 76:
+            fundemental = notes[13]
+            setNote()
+            break
+            
+        case 190:
+            fundemental = notes[14]
+            setNote()
+            break
+            
+        case 186:
+            fundemental = notes[15]
+            setNote()
+            break
+            
+        case 191:
+            fundemental = notes[16]
+            setNote()
+            break
+
+        // note keys in order for next octave rows
+        
+        //              q,  2,  w,  3,  e,  r,  5,  t,  6,  y,  7,  u,  i,  9,  o,  0,  p,  -,  [,  =,  ]
+        //             81, 50, 87, 51, 69, 82, 53, 84, 54, 89, 55, 85, 73, 57, 79, 48, 80,189,219,187,221
+
+        case 81:
+            fundemental = notes[12]
+            setNote()
+            break
+
+        case 50:
+            fundemental = notes[13]
+            setNote()
+            break
+
+        case 87:
+            fundemental = notes[14]
+            setNote()
+            break
+
+        case 51:
+            fundemental = notes[15]
+            setNote()
+            break
+
+        case 69:
+            fundemental = notes[16]
+            setNote()
+            break
+
+        case 82:
+            fundemental = notes[17]
+            setNote()
+            break
+
+        case 53:
+            fundemental = notes[18]
+            setNote()
+            break
+
+        case 84:
+            fundemental = notes[19]
+            setNote()
+            break
+
+        case 54:
+            fundemental = notes[20]
+            setNote()
+            break
+
+                    // note keys in order for next octave rows
+        
+        //              q,  2,  w,  3,  e,  r,  5,  t,  6,  y,  7,  u,  i,  9,  o,  0,  p,  -,  [,  =,  ]
+        //             81, 50, 87, 51, 69, 82, 53, 84, 54, 89, 55, 85, 73, 57, 79, 48, 80,189,219,187,221
+
+        case 89:
+            fundemental = notes[21]
+            setNote()
+            break
+
+        case 55:
+            fundemental = notes[22]
+            setNote()
+            break
+
+        case 85:
+            fundemental = notes[23]
+            setNote()
+            break
+
+        case 73:
+            fundemental = notes[24]
+            setNote()
+            break
+
+        case 57:
+            fundemental = notes[25]
+            setNote()
+            break
+
+        case 79:
+            fundemental = notes[26]
+            setNote()
+            break
+
+        case 48:
+            fundemental = notes[27]
+            setNote()
+            break
+
+        case 80:
+            fundemental = notes[28]
+            setNote()
+            break
+
+        case 189:
+            fundemental = notes[29]
+            setNote()
+
+                    // note keys in order for next octave rows
+        
+        //              q,  2,  w,  3,  e,  r,  5,  t,  6,  y,  7,  u,  i,  9,  o,  0,  p,  -,  [,  =,  ]
+        //             81, 50, 87, 51, 69, 82, 53, 84, 54, 89, 55, 85, 73, 57, 79, 48, 80,189,219,187,221
+
+        case 219:
+            fundemental = notes[30]
+            setNote()
+            break
+
+        case 187:
+            fundemental = notes[31]
+            setNote()
+            break
+
+        case 221:
+            fundemental = notes[32]
+            setNote()
+            break
+
     }
 }
 
